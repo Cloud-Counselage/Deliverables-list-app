@@ -191,17 +191,8 @@
         });
       });
 
-    // Immediate result update on input or dropdown selection
-    searchInput.addEventListener("input", () => {
-      if (searchInput.value.trim().length > 0) updateResult();
-    });
-
-    // Fix for datalist selection not triggering input
-    searchInput.addEventListener("blur", () => {
-      setTimeout(() => {
-        if (searchInput.value.trim().length > 0) updateResult();
-      }, 100);
-    });
+    searchInput.addEventListener("input", updateResult);
+    searchInput.addEventListener("change", updateResult);
 
     function updateResult() {
       const inputValue = searchInput.value.trim().toLowerCase();
