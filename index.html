@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Domain Deliverables — Download All</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <style>
+    :root{--accent:#EA7317;--muted:#666;--bg:#f6f7f9;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:#222}
+    .wrap{max-width:960px;margin:18px auto;padding:18px}
+    header{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+    header img{height:48px}
+    h1{text-align:center;margin:12px 0;font-size:1.3rem}
+    .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+    button[disabled]{opacity:.6;cursor:default}
+    .card{background:var(--card);border-radius:10px;padding:14px;border:1px solid #e6e6e6;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+    ul{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:8px}
+    li{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:linear-gradient(90deg,#fff,#fbfbfb);border:1px solid #eee}
+    a.item{flex:1;text-decoration:none;color:#111;font-weight:600}
+    small.meta{color:var(--muted);font-size:.9rem}
+    #status{margin-top:10px;color:var(--muted)}
+    .no-file{opacity:0.75;color:#999}
+    @media(max-width:560px){ .controls{flex-direction:column;align-items:stretch} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="ccpl_logo.png" alt="CCPL" onerror="this.style.display='none'">
+      <img src="gac_foundation_logo.png" alt="GAC" onerror="this.style.display='none'">
+      <img src="iac_Logo.png" alt="IAC" onerror="this.style.display='none'">
+    </header>
+
+    <h1>Deliverables — Download All as ZIP</h1>
+
+    <div class="controls">
+      <button id="downloadAllBtn">⬇️ Download All Files (ZIP)</button>
+      <button id="openListCsvBtn">📄 Download Deliverables CSV</button>
+    </div>
+
+    <div class="card">
+      <div id="intro">Click any item to open/download. Use <strong>Download All Files (ZIP)</strong> to get one zip containing all deliverables.</div>
+      <ul id="deliverablesList"></ul>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <script>
+  // ---------- Hardcoded deliverables (from your message) ----------
+  const deliverables = [
+    { label: "Tracebility Matrix", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/IAC%20GPI%20-%20LP%20Traceability%20Matrix%20Template.xlsx" },
+    { label: "Design stage Test plan", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template]%20GPI%20-%20LP%20DESIGN%20STAGE%20-%20Test%20Plan.xlsx" },
+    { label: "Requirement Elicitation", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template]%20GPI%20-%20LP%20Requirement%20Elicitation%20Questionnaire.xlsx" },
+    { label: "Project Charter", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] GPI - Project Charter.xlsx" },
+    { label: "SRS", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] GPI - SRS.xlsx" },
+    { label: "LP Project Schedule", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] GPI LP Project Schedule.xlsx" },
+    { label: "LP Coding Standards", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] IAC GPI - LP Coding Standards.docx" },
+    { label: "LP Lesson Learnt Log", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] IAC GPI - LP Lessons Learnt Log Template.xlsx" },
+    { label: "Project Report", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] IAC GPI - LP Project Report.docx" },
+    { label: "Raid Log", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] IAC GPI - Live Project - RAID log.xlsx" },
+    { label: "Software Development", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template] IAC GPI WBS - Software Development.pptx" },
+    { label: "Software Design", url: "https://gpi-deliverables-list.netlify.app/deliverables_files/[Template]IAC GPI - LP Software Design Specification.docx" }
+  ];
+
+  // ---------- DOM refs ----------
+  const listEl = document.getElementById("deliverablesList");
+  const downloadAllBtn = document.getElementById("downloadAllBtn");
+  const statusEl = document.getElementById("status");
+  const openListCsvBtn = document.getElementById("openListCsvBtn");
+
+  // Utility: filename from URL (safe)
+  function filenameFromUrl(url) {
+    try {
+      // decode URI components where possible and then take last segment
+      const decoded = decodeURIComponent(url.split(/[?#]/)[0]);
+      const parts = decoded.split("/");
+      return parts[parts.length-1] || "file";
+    } catch (e) {
+      // fallback
+      const parts = url.split("/");
+      return parts[parts.length-1] || "file";
+    }
+  }
+
+  // Render list
+  function renderList() {
+    listEl.innerHTML = "";
+    deliverables.forEach((d, idx) => {
+      const li = document.createElement("li");
+      if (d.url && d.url.trim()) {
+        const a = document.createElement("a");
+        a.className = "item";
+        a.href = encodeURI(d.url); // encode to handle spaces / unescaped characters
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = d.label;
+        // set download attribute so browser suggests a filename
+        a.setAttribute("download", filenameFromUrl(d.url));
+        li.appendChild(a);
+
+        const meta = document.createElement("small");
+        meta.className = "meta";
+        meta.textContent = filenameFromUrl(d.url);
+        li.appendChild(meta);
+      } else {
+        const span = document.createElement("span");
+        span.textContent = d.label;
+        li.appendChild(span);
+        const nf = document.createElement("small");
+        nf.className = "no-file";
+        nf.textContent = "(no file)";
+        li.appendChild(nf);
+      }
+      listEl.appendChild(li);
+    });
+  }
+
+  // Zip helper using JSZip
+  async function downloadAllAsZip() {
+    const files = deliverables.filter(d => d.url && d.url.trim());
+    if (!files.length) {
+      alert("No downloadable files found.");
+      return;
+    }
+    if (!window.JSZip) {
+      alert("JSZip not loaded. Cannot create zip.");
+      return;
+    }
+
+    downloadAllBtn.disabled = true;
+    statusEl.textContent = `Fetching ${files.length} file(s)...`;
+    const zip = new JSZip();
+    let fetched = 0;
+    for (const f of files) {
+      const encoded = encodeURI(f.url);
+      const name = filenameFromUrl(f.url);
+      try {
+        statusEl.textContent = `Fetching (${fetched+1}/${files.length}): ${name}`;
+        const res = await fetch(encoded, { credentials: "omit" });
+        if (!res.ok) {
+          console.warn("Failed to fetch", f.url, res.status);
+          statusEl.textContent = `Warning: failed to fetch ${name} (status ${res.status}). Skipping...`;
+          // continue; don't add to zip
+          continue;
+        }
+        const blob = await res.blob();
+        zip.file(name, blob);
+        fetched++;
+      } catch (err) {
+        console.error("Fetch error", f.url, err);
+        statusEl.textContent = `Error fetching ${name}. See console. Skipping.`;
+      }
+    }
+
+    if (fetched === 0) {
+      statusEl.textContent = "No files were fetched successfully. Zip canceled.";
+      downloadAllBtn.disabled = false;
+      return;
+    }
+
+    statusEl.textContent = "Compressing files...";
+    try {
+      const content = await zip.generateAsync({ type: "blob" }, metadata => {
+        statusEl.textContent = `Compressing... ${Math.round(metadata.percent)}%`;
+      });
+      statusEl.textContent = "Starting download...";
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "deliverables_all.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      statusEl.textContent = "Download started.";
+    } catch (err) {
+      console.error("Zip error", err);
+      statusEl.textContent = "Error creating zip. See console.";
+      alert("Failed to create zip. Check the browser console for details.");
+    } finally {
+      downloadAllBtn.disabled = false;
+      setTimeout(()=> statusEl.textContent = "", 2500);
+    }
+  }
+
+  // CSV export of deliverables list (label,link)
+  function downloadDeliverablesCsv() {
+    const lines = ["Label,Link"];
+    for (const d of deliverables) {
+      const label = `"${(d.label || "").replace(/"/g,'""')}"`;
+      const link = d.url || "";
+      lines.push(`${label},${link}`);
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "deliverables_list.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=> URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // Wire buttons
+  downloadAllBtn.addEventListener("click", downloadAllAsZip);
+  openListCsvBtn.addEventListener("click", downloadDeliverablesCsv);
+
+  // Init
+  renderList();
+  </script>
+</body>
+</html>
