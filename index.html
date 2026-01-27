@@ -15,6 +15,7 @@
       --bg-color: #f5f5f5;
       --text-color: #333;
       --card-bg: #ffffff;
+      --card-text: #333; /* New variable for card text */
     }
 
     body {
@@ -52,13 +53,17 @@
       margin-bottom: 20px;
       animation: slideIn 0.8s ease-out;
     }
+    
+    h2 {
+      color: var(--text-color); /* Ensures domain title is visible in dark mode */
+    }
 
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* UPGRADE 2: Customizing the Select2 Search Box */
+    /* Customizing the Select2 Search Box */
     .select2-container .select2-selection--single {
       height: 45px;
       font-size: 1.1rem;
@@ -71,18 +76,19 @@
       height: 40px;
     }
 
-    /* UPGRADE 4: Card Styling */
+    /* Card Styling */
     .deliverable-card {
       border: none;
       border-left: 5px solid var(--primary-color);
       background: var(--card-bg);
+      color: var(--card-text); /* Uses the variable that changes in dark mode */
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       margin-bottom: 15px;
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.5s ease forwards;
       animation-delay: calc(var(--delay) * 0.1s);
-      transition: transform 0.2s;
+      transition: transform 0.2s, background-color 0.3s, color 0.3s;
     }
 
     .deliverable-card:hover {
@@ -115,13 +121,15 @@
       color: white;
     }
 
-    /* Dark Mode Overrides */
+    /* --- DARK MODE SETTINGS --- */
     body.dark-mode {
       --bg-color: #121212;
-      --text-color: #e0e0e0;
+      --text-color: #f0f0f0;
       --card-bg: #1e1e1e;
+      --card-text: #f0f0f0; /* Forces card text to be white/light */
     }
     
+    /* Dark Mode fixes for Select2 Dropdown */
     body.dark-mode .select2-container--default .select2-selection--single {
       background-color: #333;
       color: white;
@@ -130,6 +138,16 @@
     
     body.dark-mode .select2-selection__rendered {
       color: white !important;
+    }
+    
+    /* Dark Mode fixes for Select2 Dropdown Options List */
+    body.dark-mode .select2-dropdown {
+      background-color: #333;
+      color: white;
+    }
+    
+    body.dark-mode .select2-results__option[aria-selected=true] {
+      background-color: #555;
     }
 
     /* Helper Classes */
@@ -201,7 +219,7 @@
       });
     });
 
-    // UPGRADE 1: Fetch and Parse CSV using PapaParse
+    // Fetch and Parse CSV using PapaParse
     Papa.parse("domain_deliverables.csv", {
       download: true,
       header: true, // Automatically uses first row as keys
@@ -236,7 +254,6 @@
 
       if (!selectedDomain) return;
 
-      // Find the row matches the selection
       const match = globalData.find(row => row["Domain Name"].trim() === selectedDomain);
 
       if (!match) {
@@ -244,15 +261,12 @@
         return;
       }
 
-      // Logic: Iterate keys, find "deliverable", display value
       let count = 0;
       let html = `<div class="col-12 text-center mb-3"><h2>${match["Domain Name"]}</h2></div>`;
 
       for (const key in match) {
-        // Logic kept exactly as requested: check if key includes 'deliverable' and has value
         if (key.toLowerCase().includes("deliverable") && match[key] && match[key].trim() !== "") {
           
-          // UPGRADE 4: Render as Bootstrap Cards in a Grid
           html += `
             <div class="col-md-6 col-lg-4">
               <div class="card deliverable-card" style="--delay:${count}">
@@ -273,10 +287,9 @@
       resultsDiv.innerHTML = html;
     }
 
-    // --- Utility Functions (Download, Print, Dark Mode) ---
+    // --- Utility Functions ---
 
     function downloadResult() {
-      // Get value from Select2
       const selected = $('#domainSelect').val();
       if (!selected) { alert("Please select a domain first."); return; }
 
@@ -285,7 +298,6 @@
       let csvContent = "Domain Name\n" + match["Domain Name"] + "\n\nDeliverables\n";
       Object.keys(match).forEach(key => {
         if (key.toLowerCase().includes("deliverable") && match[key]) {
-          // Escape quotes for CSV format logic
           let val = match[key].replace(/"/g, '""');
           if (val.includes(",")) val = `"${val}"`; 
           csvContent += val + "\n";
@@ -306,11 +318,9 @@
       
       const printWindow = window.open('', '', 'width=800,height=600');
       printWindow.document.write('<html><head><title>Print Deliverables</title>');
-      // Include basic styles for print
       printWindow.document.write('<style>body{font-family: Arial;} ul{list-style:none;} li{margin-bottom:10px; padding:5px; border-bottom:1px solid #ccc;}</style>');
       printWindow.document.write('</head><body>');
       
-      // Extract just the text logic for clean printing
       const selected = $('#domainSelect').val();
       const match = globalData.find(row => row["Domain Name"].trim() === selected);
       
@@ -332,7 +342,6 @@
       const isDark = document.body.classList.toggle("dark-mode");
       darkModeBtn.innerText = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
       
-      // Toggle Bootstrap dark theme for specific elements if needed
       if(isDark) {
         darkModeBtn.classList.remove("btn-dark");
         darkModeBtn.classList.add("btn-light");
