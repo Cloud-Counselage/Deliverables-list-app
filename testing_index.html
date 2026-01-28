@@ -1,1 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Domain Deliverables Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary: #EA7317;
+      --secondary: #f4a261;
+      --bg-color: #f5f5f5;
+      --text-color: #333;
+      --card-bg: #ffffff;
+      --card-text: #333;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', sans-serif;
+      padding-bottom: 80px;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header & Logos */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+    }
+    .logo { height: 50px; }
+    .iac-logo { height: 65px; display: block; margin: 0 auto 20px auto; }
+
+    h1 { color: var(--primary); font-weight: 700; }
+    h2 { color: var(--text-color); transition: color 0.3s ease; }
+
+    /* Select2 Customization */
+    .select2-container .select2-selection--single {
+      height: 50px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      background-color: var(--card-bg); /* Adapts to theme */
+      color: var(--text-color);
+      border: 1px solid #ced4da;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: var(--text-color); /* Ensures text color adapts */
+      line-height: 50px;
+    }
+
+    /* Card Styling */
+    .deliverable-card {
+      background: var(--card-bg);
+      color: var(--card-text);
+      border: none;
+      border-left: 6px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      height: 100%;
+    }
+    
+    .deliverable-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .card-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .del-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* Action Buttons inside Card */
+    .action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-info-modal { background-color: #17a2b8; color: white; }
+    .btn-info-modal:hover { background-color: #138496; transform: scale(1.1); color: white; }
+
+    .btn-download-file { background-color: var(--primary); color: white; }
+    .btn-download-file:hover { background-color: #d36514; transform: scale(1.1); color: white; }
+    
+    .btn-disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.5; }
+
+    /* Download All Button */
+    #btnDownloadAll {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      display: none; /* Hidden by default */
+      margin-top: 15px;
+      transition: transform 0.2s;
+    }
+    #btnDownloadAll:hover { transform: scale(1.05); background-color: #218838; }
+
+    /* Modal Styling */
+    .modal-content {
+      background-color: var(--card-bg);
+      color: var(--card-text);
+    }
+
+    /* --- DARK MODE CONFIGURATION --- */
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --card-bg: #1e1e1e;
+      --card-text: #f0f0f0;
+    }
+    
+    body.dark-mode h2 { color: #f0f0f0 !important; }
+    
+    /* FIX: Force Select2 Text Color in Dark Mode */
+    body.dark-mode .select2-container--default .select2-selection--single {
+      background-color: #333; 
+      border-color: #555;
+    }
+    body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #fff !important;
+    }
+    body.dark-mode .select2-dropdown { background-color: #333; color: white; border-color: #555; }
+    body.dark-mode .select2-results__option[aria-selected=true] { background-color: #555; }
+    
+    body.dark-mode .modal-header, body.dark-mode .modal-footer { border-color: #444; }
+    body.dark-mode .btn-close { filter: invert(1); }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-container">
+    <img src="ccpl_logo.png" alt="CCPL" class="logo">
+    <img src="gac_foundation_logo.png" alt="GAC" class="logo">
+  </div>
+  <img src="iac_Logo.png" alt="IAC" class="iac-logo">
+
+  <div class="text-center mb-5">
+    <h1>Domain Deliverables Hub</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <select id="domainSelect" class="form-select" style="width: 100%;">
+          <option value="">-- Select a Domain --</option>
+        </select>
+        <div id="loading" class="mt-2 text-muted" style="display:none;">Loading Excel Data...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="domainHeader" class="text-center mb-4" style="display:none;">
+    <h2 id="selectedDomainTitle"></h2>
+    <button id="btnDownloadAll" onclick="downloadAllFiles()">
+      <i class="bi bi-file-earmark-zip-fill"></i> Download All Files (.zip)
+    </button>
+    <div id="downloadStatus" class="mt-2 text-info fw-bold"></div>
+  </div>
+
+  <div id="results" class="row g-4"></div>
+  <div id="error" class="text-danger text-center fw-bold mt-3"></div>
+
+</div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Deliverable Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="modalDesc" class="fs-5"></p>
+        <div id="videoContainer" class="ratio ratio-16x9 mt-3" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="darkModeToggle" class="btn btn-dark position-fixed bottom-0 end-0 m-3 rounded-pill shadow" onclick="toggleDarkMode()">
+  <i class="bi bi-moon-stars-fill"></i> Dark Mode
+</button>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script>
+  /* --- CONFIGURATION --- */
+  const EXCEL_FILE = "data.xlsx";
+  const FILES_FOLDER = "deliverables_files/"; 
+
+  let domainMap = [];      
+  let detailsMap = {};     
+  let currentDeliverables = []; // Stores current view for "Download All" logic
+  
+  const resultsDiv = document.getElementById("results");
+  const errorDiv = document.getElementById("error");
+  const loadingDiv = document.getElementById("loading");
+  const domainHeader = document.getElementById("domainHeader");
+  const domainTitle = document.getElementById("selectedDomainTitle");
+  const btnDownloadAll = document.getElementById("btnDownloadAll");
+  const downloadStatus = document.getElementById("downloadStatus");
+
+  $(document).ready(function() {
+    loadExcelData();
+
+    $('#domainSelect').select2({
+      placeholder: "Search & Select a Domain...",
+      allowClear: true,
+      width: 'resolve'
+    });
+
+    $('#domainSelect').on('select2:select', function (e) {
+      renderDeliverables(e.params.data.id);
+    });
+
+    $('#domainSelect').on('select2:clear', () => { 
+      resultsDiv.innerHTML = ""; 
+      domainHeader.style.display = "none";
+    });
+  });
+
+  async function loadExcelData() {
+    loadingDiv.style.display = "block";
+    try {
+      const response = await fetch(EXCEL_FILE);
+      if(!response.ok) throw new Error("Could not find data.xlsx file");
+      
+      const arrayBuffer = await response.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer);
+
+      if(workbook.Sheets["domain_deliverables"]) {
+        domainMap = XLSX.utils.sheet_to_json(workbook.Sheets["domain_deliverables"]);
+      } else {
+        throw new Error("Sheet 'domain_deliverables' is missing.");
+      }
+
+      if(workbook.Sheets["deliverables_list"]) {
+        const detailsRaw = XLSX.utils.sheet_to_json(workbook.Sheets["deliverables_list"]);
+        detailsRaw.forEach(row => {
+          if(row.Name) {
+            // FIX: Store keys in Lowercase for Case-Insensitive Matching
+            detailsMap[row.Name.trim().toLowerCase()] = {
+              desc: row.Description || "No description available.",
+              video: row.Video || null,
+              file: row.Link || null
+            };
+          }
+        });
+      }
+
+      populateDropdown();
+
+    } catch (err) {
+      errorDiv.innerText = "Error: " + err.message;
+    } finally {
+      loadingDiv.style.display = "none";
+    }
+  }
+
+  function populateDropdown() {
+    const uniqueDomains = [...new Set(domainMap.map(row => row["Domain Name"]))].filter(Boolean).sort();
+    const select = $('#domainSelect');
+    uniqueDomains.forEach(name => select.append(new Option(name, name, false, false)));
+    select.trigger('change');
+  }
+
+  function renderDeliverables(selectedDomain) {
+    resultsDiv.innerHTML = "";
+    errorDiv.innerText = "";
+    currentDeliverables = []; // Reset list
+
+    if (!selectedDomain) return;
+
+    const domainRow = domainMap.find(d => d["Domain Name"] === selectedDomain);
+    if (!domainRow) return;
+
+    // Show Header
+    domainTitle.innerText = selectedDomain;
+    domainHeader.style.display = "block";
+    btnDownloadAll.style.display = "inline-block";
+
+    const deliverables = Object.keys(domainRow)
+      .filter(key => key !== "Domain Name" && domainRow[key])
+      .map(key => domainRow[key].trim());
+
+    if(deliverables.length === 0) {
+      resultsDiv.innerHTML = `<div class="col-12 text-center text-muted">No deliverables listed for this domain.</div>`;
+      btnDownloadAll.style.display = "none";
+      return;
+    }
+
+    deliverables.forEach((delName, index) => {
+      // FIX: Look up using Lowercase Key
+      const lookupKey = delName.toLowerCase();
+      const details = detailsMap[lookupKey] || { desc: "No details available.", video: null, file: null };
+      
+      let fileLink = "#";
+      let hasFile = false;
+      let isLocalFile = false;
+      
+      if(details.file) {
+        hasFile = true;
+        if(details.file.startsWith("http")) {
+            fileLink = details.file;
+        } else {
+            fileLink = FILES_FOLDER + details.file;
+            isLocalFile = true;
+        }
+        
+        // Add to list for "Download All" if it has a file
+        currentDeliverables.push({ 
+            name: delName, 
+            url: fileLink, 
+            isLocal: isLocalFile,
+            originalFile: details.file
+        });
+      }
+
+      const cardHtml = `
+        <div class="col-md-6 col-lg-4">
+          <div class="card deliverable-card" style="opacity:0; animation: fadeIn 0.5s ease forwards ${index * 0.1}s">
+            <div class="card-body">
+              <div class="del-title">${delName}</div>
+              <div class="d-flex">
+                <button class="action-btn btn-info-modal" 
+                  onclick="openModal('${delName.replace(/'/g, "\\'")}')">
+                  <i class="bi bi-info-lg"></i>
+                </button>
+                <a href="${fileLink}" target="_blank" 
+                   class="action-btn ${hasFile ? 'btn-download-file' : 'btn-disabled'}" 
+                   ${!hasFile ? 'onclick="return false;"' : ''}>
+                  <i class="bi bi-download"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      resultsDiv.innerHTML += cardHtml;
+    });
+  }
+
+  // --- NEW: Download All Logic ---
+  async function downloadAllFiles() {
+    if(currentDeliverables.length === 0) {
+        alert("No files available to download.");
+        return;
+    }
+
+    // Filter only local files (External links usually block ZIP downloads due to security CORS)
+    const filesToZip = currentDeliverables.filter(d => d.isLocal);
+    
+    if(filesToZip.length === 0) {
+        alert("Only external links (like Google Drive) are available. Please download them individually.");
+        return;
+    }
+
+    downloadStatus.innerText = `Preparing ${filesToZip.length} files... Please wait.`;
+    const zip = new JSZip();
+    const folder = zip.folder("Deliverables");
+
+    let count = 0;
+    
+    try {
+        for (const item of filesToZip) {
+            // Fetch the file content
+            const response = await fetch(item.url);
+            if (response.ok) {
+                const blob = await response.blob();
+                // Use original filename from Excel or fallback
+                const filename = item.originalFile || item.name + ".pdf"; 
+                folder.file(filename, blob);
+                count++;
+            }
+        }
+
+        if(count > 0) {
+            downloadStatus.innerText = "Zipping files...";
+            const content = await zip.generateAsync({type:"blob"});
+            const domainName = $('#domainSelect').val().replace(/ /g, "_");
+            saveAs(content, `${domainName}_Deliverables.zip`);
+            downloadStatus.innerText = "";
+        } else {
+            downloadStatus.innerText = "Could not fetch files.";
+        }
+    } catch (e) {
+        console.error(e);
+        downloadStatus.innerText = "Error creating zip.";
+    }
+  }
+
+  function openModal(name) {
+    // FIX: Look up using Lowercase Key
+    const details = detailsMap[name.toLowerCase()];
+    if(!details) return;
+
+    document.getElementById("modalTitle").innerText = name;
+    document.getElementById("modalDesc").innerText = details.desc;
+    
+    const vidContainer = document.getElementById("videoContainer");
+    vidContainer.innerHTML = ""; 
+    
+    if (details.video) {
+      vidContainer.style.display = "block";
+      let embedCode = "";
+      if (details.video.includes("youtube.com") || details.video.includes("youtu.be")) {
+        const vidId = details.video.split("v=")[1] || details.video.split("/").pop();
+        const cleanId = vidId ? vidId.split("&")[0].split("?")[0] : vidId;
+        embedCode = `<iframe src="https://www.youtube.com/embed/${cleanId}" allowfullscreen></iframe>`;
+      } else {
+        embedCode = `<video src="${details.video}" controls style="width:100%"></video>`;
+      }
+      vidContainer.innerHTML = embedCode;
+    } else {
+      vidContainer.style.display = "none";
+    }
+
+    const myModal = new bootstrap.Modal(document.getElementById('infoModal'));
+    myModal.show();
+    
+    document.getElementById('infoModal').addEventListener('hidden.bs.modal', function () {
+      vidContainer.innerHTML = "";
+    });
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    const btn = document.getElementById("darkModeToggle");
+    if(document.body.classList.contains("dark-mode")){
+      btn.innerHTML = '<i class="bi bi-sun-fill"></i> Light Mode';
+      btn.classList.replace("btn-dark", "btn-light");
+    } else {
+      btn.innerHTML = '<i class="bi bi-moon-stars-fill"></i> Dark Mode';
+      btn.classList.replace("btn-light", "btn-dark");
+    }
+  }
+</script>
+
+</body>
+</html>
