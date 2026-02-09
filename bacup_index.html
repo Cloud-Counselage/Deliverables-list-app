@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Domain Deliverables Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --primary-color: #EA7317;
+      --secondary-color: #f4a261;
+      --bg-color: #f5f5f5;
+      --text-color: #333;
+      --card-bg: #ffffff;
+      --card-text: #333; /* New variable for card text */
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding-bottom: 50px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Header Styling */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+
+    .logo {
+      height: 50px;
+      margin: 5px;
+    }
+
+    .iac-logo {
+      height: 60px;
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+
+    h1 {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      animation: slideIn 0.8s ease-out;
+    }
+    
+    h2 {
+      color: var(--text-color); /* Ensures domain title is visible in dark mode */
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Customizing the Select2 Search Box */
+    .select2-container .select2-selection--single {
+      height: 45px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 40px;
+    }
+
+    /* Card Styling */
+    .deliverable-card {
+      border: none;
+      border-left: 5px solid var(--primary-color);
+      background: var(--card-bg);
+      color: var(--card-text); /* Uses the variable that changes in dark mode */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
+      animation-delay: calc(var(--delay) * 0.1s);
+      transition: transform 0.2s, background-color 0.3s, color 0.3s;
+    }
+
+    .deliverable-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-body {
+      padding: 15px;
+      font-size: 1.05rem;
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn-custom {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      margin: 5px;
+      padding: 10px 20px;
+      border-radius: 50px;
+      transition: all 0.3s;
+    }
+
+    .btn-custom:hover {
+      background-color: var(--primary-color);
+      transform: scale(1.05);
+      color: white;
+    }
+
+    /* --- DARK MODE SETTINGS --- */
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --card-bg: #1e1e1e;
+      --card-text: #f0f0f0; /* Forces card text to be white/light */
+    }
+    
+    /* Dark Mode fixes for Select2 Dropdown */
+    body.dark-mode .select2-container--default .select2-selection--single {
+      background-color: #333;
+      color: white;
+      border-color: #555;
+    }
+    
+    body.dark-mode .select2-selection__rendered {
+      color: white !important;
+    }
+    
+    /* Dark Mode fixes for Select2 Dropdown Options List */
+    body.dark-mode .select2-dropdown {
+      background-color: #333;
+      color: white;
+    }
+    
+    body.dark-mode .select2-results__option[aria-selected=true] {
+      background-color: #555;
+    }
+
+    /* Helper Classes */
+    .control-panel {
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+    }
+
+    #error { color: #dc3545; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="header-container">
+      <img src="ccpl_logo.png" alt="CCPL Logo" class="logo">
+      <img src="gac_foundation_logo.png" alt="GAC Foundation Logo" class="logo">
+    </div>
+    <img src="iac_Logo.png" alt="IAC Logo" class="iac-logo">
+
+    <div class="text-center">
+      <h1>Domain Deliverables Viewer</h1>
+      
+      <div class="control-panel">
+        <select id="domainSelect" class="form-select" style="width: 100%;">
+          <option value="">-- Search & Select a Domain --</option>
+        </select>
+        
+        <div class="mt-4">
+          <button class="btn btn-custom" onclick="downloadResult()">⬇️ Download CSV</button>
+          <button class="btn btn-custom" onclick="printResults()">🖨️ Export PDF</button>
+        </div>
+        <div id="error"></div>
+      </div>
+    </div>
+
+    <div id="results" class="row g-3"></div>
+
+  </div>
+
+  <button id="darkModeToggle" class="btn btn-dark position-fixed bottom-0 end-0 m-3" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <script>
+    let globalData = [];
+    const resultsDiv = document.getElementById("results");
+    const errorDiv = document.getElementById("error");
+    const darkModeBtn = document.getElementById("darkModeToggle");
+
+    // Initialize Select2 (Searchable Dropdown)
+    $(document).ready(function() {
+      $('#domainSelect').select2({
+        placeholder: "Select a Domain",
+        allowClear: true,
+        width: 'resolve' 
+      });
+
+      // Handle Change Event via jQuery for Select2
+      $('#domainSelect').on('select2:select', function (e) {
+        renderDeliverables(e.params.data.id);
+      });
+      
+      $('#domainSelect').on('select2:clear', function (e) {
+        resultsDiv.innerHTML = "";
+      });
+    });
+
+    // Fetch and Parse CSV using PapaParse
+    Papa.parse("domain_deliverables.csv", {
+      download: true,
+      header: true, // Automatically uses first row as keys
+      skipEmptyLines: true,
+      complete: function(results) {
+        globalData = results.data;
+        populateDropdown();
+      },
+      error: function(err) {
+        errorDiv.textContent = "Error loading CSV: " + err.message;
+      }
+    });
+
+    function populateDropdown() {
+      // Extract unique domain names
+      const domainNames = [...new Set(globalData.map(row => row["Domain Name"]?.trim()))].filter(Boolean);
+      domainNames.sort();
+
+      const select = $('#domainSelect');
+      domainNames.forEach(name => {
+        const option = new Option(name, name, false, false);
+        select.append(option);
+      });
+      
+      // Refresh Select2 to show new data
+      select.trigger('change');
+    }
+
+    function renderDeliverables(selectedDomain) {
+      resultsDiv.innerHTML = "";
+      errorDiv.textContent = "";
+
+      if (!selectedDomain) return;
+
+      const match = globalData.find(row => row["Domain Name"].trim() === selectedDomain);
+
+      if (!match) {
+        errorDiv.textContent = "Domain not found.";
+        return;
+      }
+
+      let count = 0;
+      let html = `<div class="col-12 text-center mb-3"><h2>${match["Domain Name"]}</h2></div>`;
+
+      for (const key in match) {
+        if (key.toLowerCase().includes("deliverable") && match[key] && match[key].trim() !== "") {
+          
+          html += `
+            <div class="col-md-6 col-lg-4">
+              <div class="card deliverable-card" style="--delay:${count}">
+                <div class="card-body">
+                  ${match[key]}
+                </div>
+              </div>
+            </div>
+          `;
+          count++;
+        }
+      }
+
+      if(count === 0) {
+        html += `<div class="col-12 text-center"><p>No deliverables found for this domain.</p></div>`;
+      }
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // --- Utility Functions ---
+
+    function downloadResult() {
+      const selected = $('#domainSelect').val();
+      if (!selected) { alert("Please select a domain first."); return; }
+
+      const match = globalData.find(row => row["Domain Name"].trim() === selected);
+      
+      let csvContent = "Domain Name\n" + match["Domain Name"] + "\n\nDeliverables\n";
+      Object.keys(match).forEach(key => {
+        if (key.toLowerCase().includes("deliverable") && match[key]) {
+          let val = match[key].replace(/"/g, '""');
+          if (val.includes(",")) val = `"${val}"`; 
+          csvContent += val + "\n";
+        }
+      });
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${selected.replace(/ /g, "_")}_deliverables.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printResults() {
+      if (!resultsDiv.innerHTML.trim()) { alert("Please select a domain first."); return; }
+      
+      const printWindow = window.open('', '', 'width=800,height=600');
+      printWindow.document.write('<html><head><title>Print Deliverables</title>');
+      printWindow.document.write('<style>body{font-family: Arial;} ul{list-style:none;} li{margin-bottom:10px; padding:5px; border-bottom:1px solid #ccc;}</style>');
+      printWindow.document.write('</head><body>');
+      
+      const selected = $('#domainSelect').val();
+      const match = globalData.find(row => row["Domain Name"].trim() === selected);
+      
+      let content = `<h1>${match["Domain Name"]}</h1><ul>`;
+      Object.keys(match).forEach(key => {
+        if (key.toLowerCase().includes("deliverable") && match[key]) {
+          content += `<li>${match[key]}</li>`;
+        }
+      });
+      content += "</ul>";
+
+      printWindow.document.write(content);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle("dark-mode");
+      darkModeBtn.innerText = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+      
+      if(isDark) {
+        darkModeBtn.classList.remove("btn-dark");
+        darkModeBtn.classList.add("btn-light");
+      } else {
+        darkModeBtn.classList.remove("btn-light");
+        darkModeBtn.classList.add("btn-dark");
+      }
+    }
+  </script>
+</body>
+</html>
