@@ -275,7 +275,7 @@
         const detailsRaw = XLSX.utils.sheet_to_json(workbook.Sheets["deliverables_list"]);
         detailsRaw.forEach(row => {
           if(row.Name) {
-            // UPDATED: Now checks for "Video Link" first
+            // Checks for "Video Link", "Video", "Demo Video"
             const vid = row["Video Link"] || row.Video || row.video || row["Demo Video"] || null;
             
             detailsMap[row.Name.trim().toLowerCase()] = {
@@ -316,10 +316,9 @@
     domainTitle.innerText = selectedDomain;
     domainHeader.style.display = "block";
     
-    // Default to show, we hide later if no files found
     btnDownloadAll.style.display = "inline-block"; 
 
-    // FILTER: Ignore "Domain Name" and "Domain Type" columns
+    // FILTER: Ignore "Domain Name" and "Domain Type"
     const deliverables = Object.keys(domainRow)
       .filter(key => 
         key !== "Domain Name" && 
@@ -356,7 +355,6 @@
         });
       }
 
-      // Logic: Only show Download button if hasFile is true
       const downloadBtnHtml = hasFile ? 
         `<a href="${fileLink}" target="_blank" class="action-btn btn-download-file" title="Download File">
            <i class="bi bi-download"></i>
@@ -447,6 +445,7 @@
     }
   }
 
+  // --- UPDATED: Open Modal Logic (Supports Apps Script, Drive, YouTube, & Files) ---
   function openModal(name) {
     const details = detailsMap[name.toLowerCase()];
     if(!details) return;
@@ -460,11 +459,27 @@
     if (details.video) {
       vidContainer.style.display = "block";
       let embedCode = "";
-      if (details.video.includes("youtube.com") || details.video.includes("youtu.be")) {
+      
+      // Case 1: Google Apps Script Web App
+      if (details.video.includes("script.google.com")) {
+        embedCode = `<iframe src="${details.video}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+      }
+      // Case 2: Google Drive Video (Auto-convert view/open to preview)
+      else if (details.video.includes("drive.google.com")) {
+        // Transforms .../view?usp=sharing into .../preview for embedding
+        let embedUrl = details.video.replace(/\/view.*/, "/preview").replace(/\/open.*/, "/preview");
+        if(!embedUrl.includes("/preview")) embedUrl += "/preview"; // Safety fallback
+        
+        embedCode = `<iframe src="${embedUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+      }
+      // Case 3: YouTube
+      else if (details.video.includes("youtube.com") || details.video.includes("youtu.be")) {
         const vidId = details.video.split("v=")[1] || details.video.split("/").pop();
         const cleanId = vidId ? vidId.split("&")[0].split("?")[0] : vidId;
         embedCode = `<iframe src="https://www.youtube.com/embed/${cleanId}" allowfullscreen></iframe>`;
-      } else {
+      } 
+      // Case 4: Direct File (MP4)
+      else {
         embedCode = `<video src="${details.video}" controls style="width:100%"></video>`;
       }
       vidContainer.innerHTML = embedCode;
