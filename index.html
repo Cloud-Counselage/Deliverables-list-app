@@ -33,128 +33,66 @@
     }
 
     /* Header & Logos */
-    .header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 0;
-    }
+    .header-container { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
     .logo { height: 50px; }
     .iac-logo { height: 65px; display: block; margin: 0 auto 20px auto; }
 
     h1 { color: var(--primary); font-weight: 700; }
     h2 { color: var(--text-color); transition: color 0.3s ease; }
 
+    /* Highlight Text Style */
+    .highlight-text { color: #0d6efd; font-weight: 500; }
+
     /* Select2 Customization */
     .select2-container .select2-selection--single {
-      height: 50px;
-      font-size: 1.2rem;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      border: 1px solid #ced4da;
+      height: 50px; font-size: 1.2rem; border-radius: 8px; display: flex; align-items: center;
+      background-color: var(--card-bg); color: var(--text-color); border: 1px solid #ced4da;
     }
-    
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-      color: var(--text-color);
-      line-height: 50px;
-    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--text-color); line-height: 50px; }
 
     /* Card Styling */
     .deliverable-card {
-      background: var(--card-bg);
-      color: var(--card-text);
-      border: none;
-      border-left: 6px solid var(--primary);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
-      height: 100%;
+      background: var(--card-bg); color: var(--card-text); border: none;
+      border-left: 6px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s; height: 100%;
+    }
+    .deliverable-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .card-body { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
+    .del-title { font-size: 1.1rem; font-weight: 600; margin: 0; }
+
+    /* Action Buttons */
+    .action-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center; margin-left: 8px;
+      transition: all 0.2s; cursor: pointer; text-decoration: none;
     }
     
-    .deliverable-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    }
-
-    .card-body {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .del-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    /* Action Buttons inside Card */
-    .action-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 8px;
-      transition: all 0.2s;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .btn-info-modal { background-color: #17a2b8; color: white; }
-    .btn-info-modal:hover { background-color: #138496; transform: scale(1.1); color: white; }
+    /* UPDATED: Info Button Color (#3da5d9) */
+    .btn-info-modal { background-color: #3da5d9; color: white; }
+    .btn-info-modal:hover { background-color: #2c8bc6; transform: scale(1.1); color: white; }
 
     .btn-download-file { background-color: var(--primary); color: white; }
     .btn-download-file:hover { background-color: #d36514; transform: scale(1.1); color: white; }
-    
+
     /* Download All Button */
     #btnDownloadAll {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-weight: bold;
-      display: none;
-      margin-top: 15px;
-      transition: transform 0.2s;
+      background-color: #28a745; color: white; border: none; padding: 10px 20px;
+      border-radius: 50px; font-weight: bold; display: none; margin-top: 15px; transition: transform 0.2s;
     }
     #btnDownloadAll:hover { transform: scale(1.05); background-color: #218838; }
 
-    /* Modal Styling */
-    .modal-content {
-      background-color: var(--card-bg);
-      color: var(--card-text);
-    }
+    .modal-content { background-color: var(--card-bg); color: var(--card-text); }
 
-    /* Dark Mode Configuration */
-    body.dark-mode {
-      --bg-color: #121212;
-      --text-color: #f0f0f0;
-      --card-bg: #1e1e1e;
-      --card-text: #f0f0f0;
-    }
-    
+    /* Dark Mode */
+    body.dark-mode { --bg-color: #121212; --text-color: #f0f0f0; --card-bg: #1e1e1e; --card-text: #f0f0f0; }
     body.dark-mode h2 { color: #f0f0f0 !important; }
-    
-    body.dark-mode .select2-container--default .select2-selection--single {
-      background-color: #333; 
-      border-color: #555;
-    }
-    body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
-      color: #fff !important;
-    }
+    body.dark-mode .highlight-text { color: #6ea8fe; } 
+    body.dark-mode .select2-container--default .select2-selection--single { background-color: #333; border-color: #555; }
+    body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered { color: #fff !important; }
     body.dark-mode .select2-dropdown { background-color: #333; color: white; border-color: #555; }
     body.dark-mode .select2-results__option[aria-selected=true] { background-color: #555; }
-    
     body.dark-mode .modal-header, body.dark-mode .modal-footer { border-color: #444; }
     body.dark-mode .btn-close { filter: invert(1); }
-
   </style>
 </head>
 <body>
@@ -173,7 +111,7 @@
         <select id="domainSelect" class="form-select" style="width: 100%;">
           <option value="">-- Select a Domain --</option>
         </select>
-        <div id="loading" class="mt-2 text-muted" style="display:none;">Loading files...</div>
+        <div id="loading" class="mt-2 text-muted" style="display:none;">Loading Excel Data...</div>
       </div>
     </div>
   </div>
@@ -188,7 +126,6 @@
 
   <div id="results" class="row g-4"></div>
   <div id="error" class="text-danger text-center fw-bold mt-3"></div>
-
 </div>
 
 <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
@@ -221,7 +158,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <script>
-  /* --- CONFIGURATION --- */
   const EXCEL_FILE = "data.xlsx";
   const FILES_FOLDER = "deliverables_files/"; 
 
@@ -239,21 +175,9 @@
 
   $(document).ready(function() {
     loadExcelData();
-
-    $('#domainSelect').select2({
-      placeholder: "Search & Select a Domain...",
-      allowClear: true,
-      width: 'resolve'
-    });
-
-    $('#domainSelect').on('select2:select', function (e) {
-      renderDeliverables(e.params.data.id);
-    });
-
-    $('#domainSelect').on('select2:clear', () => { 
-      resultsDiv.innerHTML = ""; 
-      domainHeader.style.display = "none";
-    });
+    $('#domainSelect').select2({ placeholder: "Search & Select a Domain...", allowClear: true, width: 'resolve' });
+    $('#domainSelect').on('select2:select', function (e) { renderDeliverables(e.params.data.id); });
+    $('#domainSelect').on('select2:clear', () => { resultsDiv.innerHTML = ""; domainHeader.style.display = "none"; });
   });
 
   async function loadExcelData() {
@@ -261,23 +185,18 @@
     try {
       const response = await fetch(EXCEL_FILE);
       if(!response.ok) throw new Error("Could not find data.xlsx file");
-      
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer);
 
       if(workbook.Sheets["domain_deliverables"]) {
         domainMap = XLSX.utils.sheet_to_json(workbook.Sheets["domain_deliverables"]);
-      } else {
-        throw new Error("Sheet 'domain_deliverables' is missing.");
-      }
+      } else throw new Error("Sheet 'domain_deliverables' is missing.");
 
       if(workbook.Sheets["deliverables_list"]) {
         const detailsRaw = XLSX.utils.sheet_to_json(workbook.Sheets["deliverables_list"]);
         detailsRaw.forEach(row => {
           if(row.Name) {
-            // Checks for "Video Link", "Video", "Demo Video"
             const vid = row["Video Link"] || row.Video || row.video || row["Demo Video"] || null;
-            
             detailsMap[row.Name.trim().toLowerCase()] = {
               desc: row.Description || "No description available.",
               video: vid,
@@ -286,14 +205,9 @@
           }
         });
       }
-
       populateDropdown();
-
-    } catch (err) {
-      errorDiv.innerText = "Error: " + err.message;
-    } finally {
-      loadingDiv.style.display = "none";
-    }
+    } catch (err) { errorDiv.innerText = "Error: " + err.message; } 
+    finally { loadingDiv.style.display = "none"; }
   }
 
   function populateDropdown() {
@@ -307,59 +221,41 @@
     resultsDiv.innerHTML = "";
     errorDiv.innerText = "";
     currentDeliverables = []; 
-
     if (!selectedDomain) return;
 
     const domainRow = domainMap.find(d => d["Domain Name"] === selectedDomain);
     if (!domainRow) return;
 
-    domainTitle.innerText = selectedDomain;
-    domainHeader.style.display = "block";
+    // Title Logic with Blue Highlight
+    domainTitle.innerHTML = `${selectedDomain} <span class="highlight-text">Deliverables List</span>`;
     
+    domainHeader.style.display = "block";
     btnDownloadAll.style.display = "inline-block"; 
 
-    // FILTER: Ignore "Domain Name" and "Domain Type"
     const deliverables = Object.keys(domainRow)
-      .filter(key => 
-        key !== "Domain Name" && 
-        key !== "Domain Type" && 
-        domainRow[key]
-      )
+      .filter(key => key !== "Domain Name" && key !== "Domain Type" && domainRow[key])
       .map(key => domainRow[key].trim());
 
     if(deliverables.length === 0) {
-      resultsDiv.innerHTML = `<div class="col-12 text-center text-muted">No deliverables listed for this domain.</div>`;
+      resultsDiv.innerHTML = `<div class="col-12 text-center text-muted">No deliverables listed.</div>`;
       btnDownloadAll.style.display = "none";
       return;
     }
 
     deliverables.forEach((delName, index) => {
       const lookupKey = delName.toLowerCase();
-      const details = detailsMap[lookupKey] || { desc: "No details available.", video: null, file: null };
+      const details = detailsMap[lookupKey] || { desc: "No details.", video: null, file: null };
       
       let fileLink = "#";
       let hasFile = false;
-      
       if(details.file) {
         hasFile = true;
-        if(details.file.startsWith("http")) {
-            fileLink = details.file;
-        } else {
-            fileLink = FILES_FOLDER + details.file;
-        }
-        
-        currentDeliverables.push({ 
-            name: delName, 
-            url: fileLink,
-            originalFile: details.file
-        });
+        fileLink = (details.file.startsWith("http")) ? details.file : FILES_FOLDER + details.file;
+        currentDeliverables.push({ name: delName, url: fileLink, originalFile: details.file });
       }
 
       const downloadBtnHtml = hasFile ? 
-        `<a href="${fileLink}" target="_blank" class="action-btn btn-download-file" title="Download File">
-           <i class="bi bi-download"></i>
-         </a>` 
-        : ``; 
+        `<a href="${fileLink}" target="_blank" class="action-btn btn-download-file" title="Download"><i class="bi bi-download"></i></a>` : ``; 
 
       const cardHtml = `
         <div class="col-md-6 col-lg-4">
@@ -367,146 +263,89 @@
             <div class="card-body">
               <div class="del-title">${delName}</div>
               <div class="d-flex">
-                <button class="action-btn btn-info-modal" 
-                  onclick="openModal('${delName.replace(/'/g, "\\'")}')"
-                  title="View Description & Video">
-                  <i class="bi bi-info-lg"></i>
-                </button>
+                <button class="action-btn btn-info-modal" onclick="openModal('${delName.replace(/'/g, "\\'")}')" title="Info"><i class="bi bi-info-lg"></i></button>
                 ${downloadBtnHtml}
               </div>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
       resultsDiv.innerHTML += cardHtml;
     });
 
-    if(currentDeliverables.length === 0) {
-      btnDownloadAll.style.display = "none";
-    }
+    if(currentDeliverables.length === 0) btnDownloadAll.style.display = "none";
   }
 
-  // Download All Logic
   async function downloadAllFiles() {
-    if(currentDeliverables.length === 0) {
-        alert("No files available to download.");
-        return;
-    }
-
+    if(currentDeliverables.length === 0) { alert("No files to download."); return; }
     downloadStatus.innerText = `Preparing ${currentDeliverables.length} files...`;
     const zip = new JSZip();
     const folder = zip.folder("Deliverables");
-
     let count = 0;
-    let errors = 0;
-    
+
     for (const item of currentDeliverables) {
-        try {
-            const response = await fetch(item.url);
-            if (response.ok) {
-                const blob = await response.blob();
-                let filename = item.name + ".pdf"; 
-                if(item.originalFile && !item.originalFile.startsWith("http")) {
-                   filename = item.originalFile;
-                } else {
-                   const urlParts = item.url.split('/');
-                   const lastPart = urlParts[urlParts.length - 1];
-                   if(lastPart.includes('.')) filename = lastPart;
-                }
-                
-                folder.file(filename, blob);
-                count++;
-            } else {
-                console.warn(`Failed to fetch ${item.name}`);
-                errors++;
-            }
-        } catch (e) {
-            console.warn(`CORS/Network error for ${item.name}:`, e);
-            errors++;
+      try {
+        const response = await fetch(item.url);
+        if (response.ok) {
+          const blob = await response.blob();
+          let filename = item.name + ".pdf"; 
+          if(item.originalFile && !item.originalFile.startsWith("http")) filename = item.originalFile;
+          folder.file(filename, blob);
+          count++;
         }
+      } catch (e) { console.warn(`Skipped ${item.name} due to CORS.`); }
     }
 
     if(count > 0) {
-        downloadStatus.innerText = "Zipping files...";
-        const content = await zip.generateAsync({type:"blob"});
-        const domainName = $('#domainSelect').val().replace(/ /g, "_");
-        saveAs(content, `${domainName}_Deliverables.zip`);
-        
-        if(errors > 0) {
-             downloadStatus.innerText = `Downloaded ${count} files. (${errors} skipped due to security restrictions)`;
-        } else {
-             downloadStatus.innerText = "Download Started!";
-        }
-        
-        setTimeout(() => { downloadStatus.innerText = ""; }, 5000);
+      downloadStatus.innerText = "Zipping files...";
+      const content = await zip.generateAsync({type:"blob"});
+      saveAs(content, `${$('#domainSelect').val().replace(/ /g, "_")}_Deliverables.zip`);
+      downloadStatus.innerText = "Download Started!";
+      setTimeout(() => { downloadStatus.innerText = ""; }, 5000);
     } else {
-        downloadStatus.innerText = "Could not download files (likely due to external link security restrictions).";
-        alert("We could not auto-zip these files. This usually happens with external links (like Google Drive). Please download them individually.");
+      downloadStatus.innerText = "Error: Could not download files.";
+      alert("Could not auto-zip. Please download files individually.");
     }
   }
 
-  // --- UPDATED: Open Modal Logic (Supports Apps Script, Drive, YouTube, & Files) ---
   function openModal(name) {
     const details = detailsMap[name.toLowerCase()];
     if(!details) return;
-
     document.getElementById("modalTitle").innerText = name;
     document.getElementById("modalDesc").innerText = details.desc;
-    
     const vidContainer = document.getElementById("videoContainer");
     vidContainer.innerHTML = ""; 
     
     if (details.video) {
       vidContainer.style.display = "block";
       let embedCode = "";
-      
-      // Case 1: Google Apps Script Web App
       if (details.video.includes("script.google.com")) {
         embedCode = `<iframe src="${details.video}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
-      }
-      // Case 2: Google Drive Video (Auto-convert view/open to preview)
-      else if (details.video.includes("drive.google.com")) {
-        // Transforms .../view?usp=sharing into .../preview for embedding
+      } else if (details.video.includes("drive.google.com")) {
         let embedUrl = details.video.replace(/\/view.*/, "/preview").replace(/\/open.*/, "/preview");
-        if(!embedUrl.includes("/preview")) embedUrl += "/preview"; // Safety fallback
-        
+        if(!embedUrl.includes("/preview")) embedUrl += "/preview";
         embedCode = `<iframe src="${embedUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
-      }
-      // Case 3: YouTube
-      else if (details.video.includes("youtube.com") || details.video.includes("youtu.be")) {
+      } else if (details.video.includes("youtube.com") || details.video.includes("youtu.be")) {
         const vidId = details.video.split("v=")[1] || details.video.split("/").pop();
         const cleanId = vidId ? vidId.split("&")[0].split("?")[0] : vidId;
         embedCode = `<iframe src="https://www.youtube.com/embed/${cleanId}" allowfullscreen></iframe>`;
-      } 
-      // Case 4: Direct File (MP4)
-      else {
+      } else {
         embedCode = `<video src="${details.video}" controls style="width:100%"></video>`;
       }
       vidContainer.innerHTML = embedCode;
-    } else {
-      vidContainer.style.display = "none";
-    }
+    } else vidContainer.style.display = "none";
 
     const myModal = new bootstrap.Modal(document.getElementById('infoModal'));
     myModal.show();
-    
-    document.getElementById('infoModal').addEventListener('hidden.bs.modal', function () {
-      vidContainer.innerHTML = "";
-    });
+    document.getElementById('infoModal').addEventListener('hidden.bs.modal', function () { vidContainer.innerHTML = ""; });
   }
 
   function toggleDarkMode() {
     document.body.classList.toggle("dark-mode");
     const btn = document.getElementById("darkModeToggle");
-    if(document.body.classList.contains("dark-mode")){
-      btn.innerHTML = '<i class="bi bi-sun-fill"></i> Light Mode';
-      btn.classList.replace("btn-dark", "btn-light");
-    } else {
-      btn.innerHTML = '<i class="bi bi-moon-stars-fill"></i> Dark Mode';
-      btn.classList.replace("btn-light", "btn-dark");
-    }
+    const isDark = document.body.classList.contains("dark-mode");
+    btn.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i> Light Mode' : '<i class="bi bi-moon-stars-fill"></i> Dark Mode';
+    btn.classList.toggle("btn-dark"); btn.classList.toggle("btn-light");
   }
 </script>
-
 </body>
 </html>
